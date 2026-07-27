@@ -4,6 +4,20 @@ Unified game launcher, library organizer, and AI-assisted mod manager for Window
 
 Built with Electron + React + Tailwind CSS + SQLite (sql.js).
 
+## Is This Safe?
+
+**Yes.** CODE LIBRARY is fully open source — you can inspect every line of code in this repository. Here's why you can trust it:
+
+- **100% open source** — No hidden code, no trackers, no telemetry. The entire app is in this repo.
+- **No server-side code** — The app runs entirely on your machine. It only communicates with the Nexus Mods API using your own API key.
+- **VirusTotal scanned** — [View the full VirusTotal scan](https://www.virustotal.com/gui/file/05effac51a87063ecca332b881ade41b486dff6776f3c7f7361e4946e189ffc3/detection). The app is clean with 0 detections.
+- **No bundled malware** — The only third-party libraries used are well-known open source packages (Electron, React, sql.js, adm-zip). All listed in `package.json`.
+- **Portable** — The app is a portable zip. No installer modifies your system. Just extract and run.
+
+### Why Windows SmartScreen May Warn You
+
+Windows SmartScreen shows a warning for apps from unrecognized publishers. This is a reputation system, not a security scan. CODE LIBRARY is safe — the warning appears simply because not enough people have downloaded it yet for Microsoft to build a trust reputation. Click **More info** → **Run anyway** to proceed.
+
 ## Features
 
 - **Game Library** — Automatically scans Steam, GOG, Epic, and Rockstar libraries. Add custom games manually.
@@ -13,42 +27,18 @@ Built with Electron + React + Tailwind CSS + SQLite (sql.js).
 - **Mod Management** — Track installed mods per game, view details, and clean uninstall.
 - **Welcome Guide** — First-run setup wizard with Nexus Mods API key configuration.
 
-## Prerequisites
+## Download
 
-- [Node.js](https://nodejs.org/) (v18+)
-- Windows (current build target)
+Go to the [Releases](https://github.com/erezsela99/code-library/releases/latest) page and download the latest zip. Extract it to any folder and run `CODE LIBRARY.exe`.
 
-## Install
+## Install from Source
 
 ```bash
 git clone https://github.com/erezsela99/code-library.git
 cd code-library
 npm install
-```
-
-## Development
-
-```bash
 npm run dev
 ```
-
-This starts Vite dev server and Electron simultaneously with hot reload.
-
-## Build
-
-```bash
-npx vite build
-```
-
-The built app runs from the `dist/` folder.
-
-## Usage
-
-1. Launch the app — it will scan for installed games automatically.
-2. Go to **Settings** and enter your [Nexus Mods API key](https://www.nexusmods.com/users/myaccount?tab=api+access).
-3. Browse the **Mod Browser** to search and install mods.
-4. Click any game in your library to see its details and installed mods.
-5. Launch games in **Vanilla** or **Modded** mode.
 
 ## Tech Stack
 
