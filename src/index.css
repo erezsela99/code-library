@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #050508;
+  color: #e8e8f0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#root > div {
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a4a;
+}
+
+.titlebar {
+  -webkit-app-region: drag;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: #050508;
+  border-bottom: 1px solid #1a1a25;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.titlebar-btn {
+  -webkit-app-region: no-drag;
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: #8888a0;
+}
+
+.titlebar-btn:hover {
+  background: #2a2a3a;
+  color: #e8e8f0;
+}
+
+.titlebar-btn.close:hover {
+  background: #ff4757;
+  color: white;
+}
+
+.game-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(108, 92, 231, 0.15);
+}
+
+.glow-border {
+  position: relative;
+}
+
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #6c5ce7, #00d2a0, #6c5ce7);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glow-border:hover::after {
+  opacity: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.btn-primary {
+  @apply px-6 py-2.5 bg-cl-accent hover:bg-cl-accent-hover text-white rounded-lg font-medium transition-all duration-200 flex items-center gap-2;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-cl-card hover:bg-cl-card-hover border border-cl-border text-cl-text rounded-lg font-medium transition-all duration-200 flex items-center gap-2;
+}
+
+.input-field {
+  @apply w-full px-4 py-2.5 bg-cl-card border border-cl-border rounded-lg text-cl-text placeholder-cl-text-dim focus:outline-none focus:border-cl-accent transition-colors;
+}
