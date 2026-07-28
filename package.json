@@ -10,14 +10,15 @@
     "electron": "electron ."
   },
   "dependencies": {
-    "sql.js": "^1.9.0",
+    "adm-zip": "^0.5.10",
+    "glob": "^10.3.10",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
-    "node-fetch": "^3.3.2",
-    "adm-zip": "^0.5.10",
-    "glob": "^10.3.10",
-    "sudo-prompt": "^9.2.1"
+    "sql.js": "^1.9.0",
+    "sudo-prompt": "^9.2.1",
+    "ws": "^8.21.1"
   },
   "build": {
     "appId": "com.erezsela.code-library",
@@ -34,7 +35,8 @@
     ],
     "win": {
       "target": "portable",
-      "icon": "icon.ico"
+      "icon": "icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "portable": {
       "artifactName": "${productName}-${version}-portable.exe"

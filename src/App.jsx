@@ -7,6 +7,7 @@ import LibraryPage from './pages/LibraryPage'
 import GameDetailPage from './pages/GameDetailPage'
 import ModBrowserPage from './pages/ModBrowserPage'
 import SettingsPage from './pages/SettingsPage'
+import Gta5ModsPage from './pages/Gta5ModsPage'
 
 export default function App() {
   const [games, setGames] = useState([])
@@ -80,6 +81,9 @@ export default function App() {
               } />
               <Route path="/mods/:gameId" element={
                 <ModBrowserPage />
+              } />
+              <Route path="/gta5mods" element={
+                <Gta5ModsPage />
               } />
               <Route path="/settings" element={
                 <SettingsPage />

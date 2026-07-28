@@ -37,6 +37,102 @@ const COMMON_PATHS = {
 
 const STEAM_APPS_VDF = 'libraryfolders.vdf';
 
+const BLACKLISTED_DIRS = [
+  'steamworks common redistributables',
+  'steamworks sdk',
+  'directx',
+  'vcredist',
+  'microsoft visual c++',
+  'commonfiles',
+  'directshow',
+  'windows kits',
+  '.net',
+  'dotnet',
+  ' redistributable',
+  'physx',
+  'openal',
+  'pragma',
+  'galaxy common',
+  'gog galaxy',
+  'epic games launcher',
+  'epic games\\engine',
+];
+
+const BLACKLISTED_TITLES = [
+  'steamworks common redistributables',
+  'steamworks sdk redistributable',
+  'rockstar games launcher',
+  'rockstar games social club',
+  'social club',
+  'rockstar cloud services',
+  'epic games launcher',
+  'epic online services',
+  'gog galaxy',
+  'gog overlay',
+  'ubisoft connect',
+  'ubisoft connect launcher',
+  'ea app',
+  'ea desktop',
+  'origin',
+  'battle.net',
+  'xbox console companion',
+  'xbox game bar',
+  'nvidia GeForce Experience',
+  'nvidia app',
+  'amd software',
+  'radeon software',
+  'msi afterburner',
+  'rivatuner',
+  'obs studio',
+  'discord',
+  'spotify',
+  'chrome',
+  'firefox',
+  '7-zip',
+  'winrar',
+  'notepad++',
+  'visual studio',
+  'vs code',
+  'python',
+  'node.js',
+  'java',
+  'dotnet',
+  '.net',
+  'directx runtime',
+  'directx sdk',
+  'vcredist',
+  'microsoft visual c++',
+  'physx',
+  'openal',
+  'pragma',
+  'galaxy common',
+  'redistributable',
+  'dxwebsetup',
+  'setup exe',
+  'uninstall',
+  'uninstall.exe',
+  'installer',
+  'launcher',
+  'social club',
+  ' rockstar',
+  'forza horizon 6',
+];
+
+function isBlacklisted(title, installPath) {
+  const t = (title || '').toLowerCase();
+  const p = (installPath || '').toLowerCase();
+
+  for (const bl of BLACKLISTED_TITLES) {
+    if (t.includes(bl)) return true;
+  }
+
+  for (const bl of BLACKLISTED_DIRS) {
+    if (t.includes(bl) || p.includes(bl)) return true;
+  }
+
+  return false;
+}
+
 async function readVDF(filePath) {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
@@ -76,14 +172,17 @@ async function scanSteamLibrary() {
         const idMatch = file.match(/appmanifest_(\d+)/);
         if (nameMatch && idMatch) {
           const gameName = nameMatch[1];
+          const steamAppId = idMatch[1];
           const installDir = path.join(appsDir, 'common', gameName);
           const exePath = findExeInDir(installDir);
+          if (isBlacklisted(gameName, installDir)) continue;
           games.push({
             title: gameName,
             platform: 'Steam',
+            steam_app_id: steamAppId,
             exe_path: exePath || null,
             install_path: fs.existsSync(installDir) ? installDir : null,
-            cover_url: `https://cdn.akamai.steamstatic.com/steam/apps/${idMatch[1]}/header.jpg`,
+            cover_url: `https://cdn.akamai.steamstatic.com/steam/apps/${steamAppId}/header.jpg`,
           });
         }
       }
@@ -101,6 +200,8 @@ function findExeInDir(dir) {
     const exes = files.filter(f => f.endsWith('.exe'));
     if (exes.length === 1) return path.join(dir, exes[0]);
     if (exes.length > 1) {
+      const launcher = exes.find(f => /^(PlayGTAV|PlayRDR2|launcher|Rockstar|SocialClub)\.exe$/i.test(f));
+      if (launcher) return path.join(dir, launcher);
       const mainExe = exes.find(f => !f.includes('uninstall') && !f.includes('setup') && !f.includes('launcher'));
       return mainExe ? path.join(dir, mainExe) : path.join(dir, exes[0]);
     }
@@ -121,7 +222,7 @@ async function scanGOGLibrary() {
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
           const exePath = findExeInDir(fullPath);
-          if (exePath) {
+          if (exePath && !isBlacklisted(entry, fullPath)) {
             games.push({
               title: entry,
               platform: 'GOG',
@@ -150,8 +251,11 @@ async function scanEpicLibrary() {
       try {
         const content = fs.readFileSync(path.join(manifestDir, file), 'utf-8');
         const data = JSON.parse(content);
+        const displayName = data.DisplayName || path.basename(file, '.item');
+        const installLoc = data.InstallLocation || '';
+        if (isBlacklisted(displayName, installLoc)) continue;
         games.push({
-          title: data.DisplayName || path.basename(file, '.item'),
+          title: displayName,
           platform: 'Epic',
           exe_path: data.InstallLocation ? findExeInDir(data.InstallLocation) : null,
           install_path: data.InstallLocation || null,
@@ -178,7 +282,7 @@ async function scanRockstarLibrary() {
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
           const exePath = findExeInDir(fullPath);
-          if (exePath) {
+          if (exePath && !isBlacklisted(entry, fullPath)) {
             games.push({
               title: entry,
               platform: 'Rockstar',
@@ -211,7 +315,8 @@ async function scanRegistryForGames() {
       if (match) {
         const installPath = match[1].trim();
         const exePath = findExeInDir(installPath);
-        if (exePath) {
+        const title = path.basename(installPath);
+        if (exePath && !isBlacklisted(title, installPath)) {
           games.push({
             title: path.basename(installPath),
             platform: 'Steam',
@@ -249,7 +354,7 @@ async function scanAllLibraries(additionalDirs = []) {
         const stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
           const exePath = findExeInDir(fullPath);
-          if (exePath) {
+          if (exePath && !isBlacklisted(entry, fullPath)) {
             allGames.push({
               title: entry,
               platform: 'Local',
@@ -258,7 +363,7 @@ async function scanAllLibraries(additionalDirs = []) {
               cover_url: null,
             });
           }
-        } else if (entry.endsWith('.exe')) {
+        } else if (entry.endsWith('.exe') && !isBlacklisted(path.basename(entry, '.exe'), fullPath)) {
           allGames.push({
             title: path.basename(entry, '.exe'),
             platform: 'Local',

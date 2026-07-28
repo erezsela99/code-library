@@ -16,3 +16,6 @@ Desktop.ini
 
 # Build
 out/
+
+# Backups
+backups/
