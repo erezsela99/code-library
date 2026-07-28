@@ -1,6 +1,6 @@
 {
   "name": "code-library",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Unified game launcher, library organizer, and AI-assisted mod manager",
   "main": "electron/main.js",
   "scripts": {
@@ -34,12 +34,14 @@
       "icon.ico"
     ],
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "icon.ico",
       "requestedExecutionLevel": "requireAdministrator"
     },
-    "portable": {
-      "artifactName": "${productName}-${version}-portable.exe"
+    "nsis": {
+      "artifactName": "${productName}-${version}-setup.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   },
   "devDependencies": {
