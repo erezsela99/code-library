@@ -35,8 +35,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "icon.ico",
-      "requestedExecutionLevel": "requireAdministrator"
+      "icon": "icon.ico"
     },
     "nsis": {
       "artifactName": "${productName}-${version}-setup.exe",

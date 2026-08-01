@@ -148,11 +148,17 @@ function createWindow() {
     frame: false,
     titleBarStyle: 'hidden',
     backgroundColor: '#050508',
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+    mainWindow.focus();
   });
 
   const isDev = !app.isPackaged;
@@ -163,21 +169,34 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(async () => {
-  try { await initDatabase(); } catch (e) { console.error('DB init error:', e.message); }
-  try { fs.mkdirSync(CACHE_DIR, { recursive: true }); } catch {}
-  try { fs.mkdirSync(MODS_DIR, { recursive: true }); } catch {}
-  createWindow();
-});
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
 
-app.on('window-all-closed', () => {
-  if (db) { saveDb(); db.close(); }
-  if (process.platform !== 'darwin') app.quit();
-});
+  app.whenReady().then(async () => {
+    try { await initDatabase(); } catch (e) { console.error('DB init error:', e.message); }
+    try { fs.mkdirSync(CACHE_DIR, { recursive: true }); } catch {}
+    try { fs.mkdirSync(MODS_DIR, { recursive: true }); } catch {}
+    createWindow();
+  });
 
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
+  app.on('window-all-closed', () => {
+    if (db) { saveDb(); db.close(); }
+    if (process.platform !== 'darwin') app.quit();
+  });
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+}
 
 ipcMain.on('window:minimize', () => mainWindow?.minimize());
 ipcMain.on('window:maximize', () => {
